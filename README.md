@@ -1,9 +1,14 @@
 # einvoice
-电子发票识别，可识别 电子普票 电子专票
+电子发票识别
 文件类型支持 pdf ofd
 
-在线识别页面 http://www.heycore.com/invoice.html
+fork https://github.com/sanluan/einvoice 
 
-pdf识别部分参考改进了 https://github.com/fantasyxxj/einvoice
+修改部分识别兼容性问题
 
-![](preview.jpg)
+期望实现功能
+
+- 批量修改发票名字
+- ~~统计金额~~
+- ~~图形界面~~
+
