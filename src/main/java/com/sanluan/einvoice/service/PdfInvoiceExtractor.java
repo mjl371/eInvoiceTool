@@ -39,7 +39,7 @@ public class PdfInvoiceExtractor {
         }
         String allText = replace(fullText).replaceAll("（", "(").replaceAll("）", ")").replaceAll("￥", "¥");
         {
-            String reg = "机器编号:(?<machineNumber>\\d{12})|发票代码:(?<code>\\d{12})|发票号码:(?<number>\\d{8})|:(?<date>\\d{4}年\\d{2}月\\d{2}日)"
+            String reg = "机器编号:(?<machineNumber>\\d*)|发票代码:(?<code>\\d{12})|发票号码:(?<number>\\d*)|:(?<date>\\d{4}年\\d{2}月\\d{2}日)"
                     + "|校验码:(?<checksum>\\d{20}|\\S{4,})";
             Pattern pattern = Pattern.compile(reg);
             Matcher matcher = pattern.matcher(allText);
