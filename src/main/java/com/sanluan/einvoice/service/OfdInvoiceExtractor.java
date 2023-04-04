@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -41,11 +42,11 @@ public class OfdInvoiceExtractor {
         invoice.setNumber(root.elementTextTrim("InvoiceNo"));
         invoice.setDate(root.elementTextTrim("IssueDate"));
         invoice.setChecksum(root.elementTextTrim("InvoiceCheckCode"));
-        invoice.setAmount(new BigDecimal(root.elementTextTrim("TaxExclusiveTotalAmount")));
-        invoice.setTaxAmount(new BigDecimal(root.elementTextTrim("TaxTotalAmount")));
+        invoice.setAmount(stringToBigDecimal(root.elementTextTrim("TaxExclusiveTotalAmount")));
+        invoice.setTaxAmount(stringToBigDecimal(root.elementTextTrim("TaxTotalAmount")));
         int ind = content.indexOf("圆整</ofd:TextCode>");
         invoice.setTotalAmountString(content.substring(content.lastIndexOf(">", ind) + 1, ind + 2));
-        invoice.setTotalAmount(new BigDecimal(root.elementTextTrim("TaxInclusiveTotalAmount")));
+        invoice.setTotalAmount(stringToBigDecimal(root.elementTextTrim("TaxInclusiveTotalAmount")));
         invoice.setPayee(root.elementTextTrim("Payee"));
         invoice.setReviewer(root.elementTextTrim("Checker"));
         invoice.setDrawer(root.elementTextTrim("InvoiceClerk"));
@@ -79,18 +80,57 @@ public class OfdInvoiceExtractor {
             for (Element element : elements) {
                 Detail detail = new Detail();
                 detail.setName(element.elementTextTrim("Item"));
-                detail.setAmount(new BigDecimal(element.elementTextTrim("Amount")));
-                detail.setTaxAmount(new BigDecimal(element.elementTextTrim("TaxAmount")));
-                detail.setCount(new BigDecimal(element.elementTextTrim("Quantity")));
-                detail.setPrice(new BigDecimal(element.elementTextTrim("Price")));
+                detail.setAmount(stringToBigDecimal(element.elementTextTrim("Amount")));
+                detail.setTaxAmount(stringToBigDecimal(element.elementTextTrim("TaxAmount")));
+                detail.setCount(stringToBigDecimal(element.elementTextTrim("Quantity")));
+                detail.setPrice(stringToBigDecimal(element.elementTextTrim("Price")));
                 detail.setUnit(element.elementTextTrim("MeasurementDimension"));
                 detail.setModel(element.elementTextTrim("Specification"));
+
                 detail.setTaxRate(
-                        new BigDecimal(element.elementTextTrim("TaxScheme").replace("%", "")).divide(new BigDecimal(100)));
+                        getTaxRate(element.elementTextTrim("TaxScheme")));
+
                 detailList.add(detail);
             }
             invoice.setDetailList(detailList);
         }
         return invoice;
+
     }
+
+    public static BigDecimal stringToBigDecimal(String string) {
+        if (StringUtils.isBlank(string))
+            return null;
+        else {
+            try {
+                return new BigDecimal(string);
+            } catch (Exception e) {
+                return null;
+            }
+
+        }
+
+    }
+
+    public static BigDecimal getTaxRate(String string) {
+        if (StringUtils.isBlank(string))
+            return null;
+        else {
+            if (string.contains("免税")) {
+                return new BigDecimal(0);
+            } else {
+
+                BigDecimal bigDecimal = stringToBigDecimal(string.replace("%", ""));
+                if (bigDecimal == null) {
+                    return bigDecimal;
+                } else {
+                    return bigDecimal.divide(new BigDecimal(100));
+                }
+
+            }
+
+        }
+
+    }
+
 }
