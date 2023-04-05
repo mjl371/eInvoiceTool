@@ -8,7 +8,6 @@ fork https://github.com/sanluan/einvoice
 
 功能
 
-- [x] 批量修改发票名字
-- [x] 统计金额
-- [x] 导出csv
-- [ ] 图形界面
+- [x] 批量修改发票文件名
+- [x] 导出excel
+- [ ] ~~图形界面~~

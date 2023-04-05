@@ -34,6 +34,7 @@ public class PdfInvoiceExtractor {
         PDFTextStripper textStripper = new PDFTextStripper();
         textStripper.setSortByPosition(true);
         String fullText = textStripper.getText(doc);
+        // System.out.println(fullText);
         if (firstPage.getRotation() != 0) {
             pageWidth = Math.round(firstPage.getCropBox().getHeight());
         }

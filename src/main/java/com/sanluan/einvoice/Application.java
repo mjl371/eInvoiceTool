@@ -1,13 +1,9 @@
 package com.sanluan.einvoice;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -17,10 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.sanluan.einvoice.service.OfdInvoiceExtractor;
 import com.sanluan.einvoice.service.PdfInvoiceExtractor;
 import com.alibaba.excel.EasyExcel;
-import com.opencsv.CSVWriter;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
+
 import com.sanluan.einvoice.service.Invoice;
 
 @SpringBootApplication
@@ -69,7 +62,6 @@ public class Application {
 
         }
 
-        // writeToCsv(invoiceList, folderPath);
         writeToExcel(invoiceList, folderPath);
 
         System.out.println(invoiceCount + " " + invoiceAmount);
@@ -118,42 +110,9 @@ public class Application {
 
     }
 
-    public static void writeToCsv(List<Invoice> invoiceList, String csvPath) {
-
-        try {
-
-            FileOutputStream fos = new FileOutputStream(csvPath + "\\"+System.currentTimeMillis()+"output.csv");
-            // excel 乱码请用gbk
-            OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
-            CSVWriter writer = new CSVWriter(osw);
-
-            ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
-            mappingStrategy.setType(Invoice.class);
-
-            StatefulBeanToCsvBuilder<Invoice> builder = new StatefulBeanToCsvBuilder(writer);
-            StatefulBeanToCsv beanWriter = builder.withMappingStrategy(mappingStrategy).build();
-
-            String[] columns = new String[] {
-                    "title", "machineNumber", "code", "number", "date", "checksum", "buyerName", "buyerCode",
-                    "buyerAddress", "buyerAccount", "password", "amount", "taxAmount", "totalAmountString",
-                    "totalAmount", "sellerName", "sellerCode", "sellerAddress", "sellerAccount", "payee", "reviewer",
-                    "drawer", "type"
-            };
-            mappingStrategy.setColumnMapping(columns);
-
-            beanWriter.write(invoiceList);
-
-            writer.close();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
-
     public static void writeToExcel(List<Invoice> invoiceList, String excelPath) {
 
-        String fileName = excelPath + "\\"+System.currentTimeMillis()+"output.xlsx";
+        String fileName = excelPath + "\\" + System.currentTimeMillis() + "output.xlsx";
         EasyExcel.write(fileName, Invoice.class)
                 .sheet("工作表1")
                 .doWrite(invoiceList);
