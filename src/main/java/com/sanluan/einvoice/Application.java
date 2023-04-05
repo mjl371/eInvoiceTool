@@ -1,15 +1,25 @@
 package com.sanluan.einvoice;
 
 import java.io.File;
-
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sanluan.einvoice.service.OfdInvoiceExtractor;
 import com.sanluan.einvoice.service.PdfInvoiceExtractor;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.ColumnPositionMappingStrategy;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.sanluan.einvoice.service.Invoice;
 
 @SpringBootApplication
@@ -24,7 +34,47 @@ public class Application {
 
     }
 
-    public static BigDecimal renameInvoice(File invoFile, boolean isPdf) {
+    public static void getFolder(String folderPath) {
+        File folder = new File(folderPath);
+        File[] listOfFiles = folder.listFiles();
+        int invoiceCount = 0;
+        BigDecimal invoiceAmount = new BigDecimal(0);
+
+        List<Invoice> invoiceList = new ArrayList<Invoice>();
+
+        for (File file : listOfFiles) {
+            try {
+                if (file.isFile()) {
+                    String fileName = file.getName().toLowerCase();
+                    System.out.println(fileName);
+                    Invoice invoice = null;
+                    if (fileName.endsWith(".pdf")) {
+                        invoice = renameInvoice(file, true);
+                    } else if (fileName.endsWith(".ofd")) {
+                        invoice = renameInvoice(file, false);
+                    } else {
+                        continue;
+                    }
+                    invoiceList.add(invoice);
+                    invoiceCount++;
+                    invoiceAmount = invoiceAmount.add(invoice.getTotalAmount());
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("解析失败");
+                continue;
+            }
+
+        }
+
+        writeToCsv(invoiceList, folderPath);
+
+        System.out.println(invoiceCount + " " + invoiceAmount);
+
+    }
+
+    public static Invoice renameInvoice(File invoFile, boolean isPdf) {
 
         try {
 
@@ -57,50 +107,46 @@ public class Application {
 
             System.out.println(invoice.getTotalAmount());
 
-            return invoice.getTotalAmount();
+            return invoice;
 
         } catch (IOException e) {
             e.printStackTrace();
-            return new BigDecimal(0);
+            return null;
         }
 
     }
 
-    public static void getFolder(String folderPath) {
-        File folder = new File(folderPath);
-        File[] listOfFiles = folder.listFiles();
-        int invoiceCount = 0;
+    public static void writeToCsv(List<Invoice> invoiceList, String csvPath) {
 
-        BigDecimal invoiceAmount = new BigDecimal(0);
+        try {
+            FileOutputStream fos = new FileOutputStream(csvPath + "\\output.csv");
+            //excel 乱码请用gbk
+            OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+            CSVWriter writer = new CSVWriter(osw);
 
-        for (File file : listOfFiles) {
-            try{
-                if (file.isFile()) {
-                    String fileName = file.getName().toLowerCase();
-                    System.out.println(fileName);
-                    if (fileName.endsWith(".pdf")) {
-    
-                        invoiceAmount = invoiceAmount.add(renameInvoice(file, true));
-                        invoiceCount++;
-    
-                    } else if (fileName.endsWith(".ofd")) {
-                        invoiceAmount = invoiceAmount.add(renameInvoice(file, false));
-                        invoiceCount++;
-    
-                    }
-    
-                }
-            }catch (Exception e)
-            {
-                e.printStackTrace();
-                System.out.println("解析失败");
-                continue;
-            }
 
-           
+            ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
+            mappingStrategy.setType(Invoice.class);
+
+            StatefulBeanToCsvBuilder<Invoice> builder = new StatefulBeanToCsvBuilder(writer);
+            StatefulBeanToCsv beanWriter = builder.withMappingStrategy(mappingStrategy).build();
+
+            String[] columns = new String[] {
+                    "title", "machineNumber", "code", "number", "date", "checksum", "buyerName", "buyerCode",
+                    "buyerAddress", "buyerAccount", "password", "amount", "taxAmount", "totalAmountString",
+                    "totalAmount", "sellerName", "sellerCode", "sellerAddress", "sellerAccount", "payee", "reviewer",
+                    "drawer", "type"
+            };
+            mappingStrategy.setColumnMapping(columns);
+
+            beanWriter.write(invoiceList);
+
+            writer.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
-        System.out.println(invoiceCount + " " + invoiceAmount);
-
     }
+
 }

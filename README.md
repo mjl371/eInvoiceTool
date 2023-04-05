@@ -10,5 +10,5 @@ fork https://github.com/sanluan/einvoice
 
 - [x] 批量修改发票名字
 - [x] 统计金额
-- [ ] 导出csv
+- [x] 导出csv
 - [ ] 图形界面
