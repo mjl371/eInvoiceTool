@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sanluan.einvoice.service.OfdInvoiceExtractor;
 import com.sanluan.einvoice.service.PdfInvoiceExtractor;
+import com.alibaba.excel.EasyExcel;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -68,7 +69,8 @@ public class Application {
 
         }
 
-        writeToCsv(invoiceList, folderPath);
+        // writeToCsv(invoiceList, folderPath);
+        writeToExcel(invoiceList, folderPath);
 
         System.out.println(invoiceCount + " " + invoiceAmount);
 
@@ -119,11 +121,11 @@ public class Application {
     public static void writeToCsv(List<Invoice> invoiceList, String csvPath) {
 
         try {
-            FileOutputStream fos = new FileOutputStream(csvPath + "\\output.csv");
-            //excel 乱码请用gbk
+
+            FileOutputStream fos = new FileOutputStream(csvPath + "\\"+System.currentTimeMillis()+"output.csv");
+            // excel 乱码请用gbk
             OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
             CSVWriter writer = new CSVWriter(osw);
-
 
             ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
             mappingStrategy.setType(Invoice.class);
@@ -146,6 +148,15 @@ public class Application {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+    }
+
+    public static void writeToExcel(List<Invoice> invoiceList, String excelPath) {
+
+        String fileName = excelPath + "\\"+System.currentTimeMillis()+"output.xlsx";
+        EasyExcel.write(fileName, Invoice.class)
+                .sheet("工作表1")
+                .doWrite(invoiceList);
 
     }
 

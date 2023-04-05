@@ -3,30 +3,58 @@ package com.sanluan.einvoice.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelProperty;
+
 public class Invoice {
+    @ExcelProperty("发票标题")
     private String title;
+    @ExcelProperty("机器编号")
     private String machineNumber;
+    @ExcelProperty("发票代码")
     private String code;
+    @ExcelProperty("发票号码")
     private String number;
+    @ExcelProperty("开票日期")
     private String date;
+    @ExcelProperty("校验码")
     private String checksum;
+    @ExcelProperty("购买方名称")
     private String buyerName;
+    @ExcelProperty("购买方纳税识别号")
     private String buyerCode;
+    @ExcelProperty("购买方地址")
     private String buyerAddress;
+    @ExcelProperty("购买方开户行及账号")
     private String buyerAccount;
+    @ExcelProperty("密码区")
     private String password;
+    @ExcelProperty("金额")
     private BigDecimal amount;
+    @ExcelProperty("税额")
     private BigDecimal taxAmount;
+    @ExcelProperty("价税合计(大写) ")
     private String totalAmountString;
+    @ExcelProperty("价税合计(小写) ")
     private BigDecimal totalAmount;
+    @ExcelProperty("销售方名称")
     private String sellerName;
+    @ExcelProperty("销售方纳税识别号")
     private String sellerCode;
+    @ExcelProperty("销售方地址")
     private String sellerAddress;
+    @ExcelProperty("销售方开户行及账号")
     private String sellerAccount;
+    @ExcelProperty("收款人")
     private String payee;
+    @ExcelProperty("复核人")
     private String reviewer;
+    @ExcelProperty("开票人")
     private String drawer;
+    @ExcelProperty("发票类型")
     private String type;
+
+    @ExcelIgnore
     private List<Detail> detailList;
 
     /**
