@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Scanner;
 
-import org.dom4j.DocumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sanluan.einvoice.service.OfdInvoiceExtractor;
@@ -18,8 +15,6 @@ import com.sanluan.einvoice.service.Invoice;
 @SpringBootApplication
 public class Application {
     public static void main(String[] args) {
-        // getFolder("C:\\workCode\\test");
-        // Logger logger = LoggerFactory.getLogger(Application.class);
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("请输入发票文件夹路径: ");
@@ -29,7 +24,7 @@ public class Application {
 
     }
 
-    public static BigDecimal testInvoice(File invoFile, boolean isPdf) {
+    public static BigDecimal renameInvoice(File invoFile, boolean isPdf) {
 
         try {
 
@@ -39,25 +34,25 @@ public class Application {
             } else {
                 try {
                     invoice = OfdInvoiceExtractor.extract(invoFile);
-                } catch (IOException | DocumentException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             String fileExtension = isPdf ? ".pdf" : ".ofd";
 
             String newName = invoFile.getParent() + "\\"
-                    + invoice.getCode() +
-                    "_" + invoice.getNumber()
-                    + "_" + invoice.getDate()
+                    + invoice.getDate().replace("年", "").replace("月", "").replace("日", "")
+                    + "_" + invoice.getSellerName()
+                    + "_" + invoice.getTotalAmount()
+                    + "_" + invoice.getNumber()
                     + fileExtension;
 
             File newFile = new File(newName);
 
             if (invoFile.renameTo(newFile)) {
-                System.out.println("Rename successful " + newFile.getName());
+                System.out.println("重命名成功 " + newFile.getName());
             } else {
-                System.out.println("Rename failed " + invoFile.getName());
-
+                System.out.println("重命名成功失败！检查是否占用文件或存在同名 " + invoFile.getName());
             }
 
             System.out.println(invoice.getTotalAmount());
@@ -79,21 +74,30 @@ public class Application {
         BigDecimal invoiceAmount = new BigDecimal(0);
 
         for (File file : listOfFiles) {
-            if (file.isFile()) {
-                String fileName = file.getName().toLowerCase();
-                System.out.println(fileName);
-                if (fileName.endsWith(".pdf")) {
-
-                    invoiceAmount = invoiceAmount.add(testInvoice(file, true));
-                    invoiceCount++;
-
-                } else if (fileName.endsWith(".ofd")) {
-                    invoiceAmount = invoiceAmount.add(testInvoice(file, false));
-                    invoiceCount++;
-
+            try{
+                if (file.isFile()) {
+                    String fileName = file.getName().toLowerCase();
+                    System.out.println(fileName);
+                    if (fileName.endsWith(".pdf")) {
+    
+                        invoiceAmount = invoiceAmount.add(renameInvoice(file, true));
+                        invoiceCount++;
+    
+                    } else if (fileName.endsWith(".ofd")) {
+                        invoiceAmount = invoiceAmount.add(renameInvoice(file, false));
+                        invoiceCount++;
+    
+                    }
+    
                 }
-
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+                System.out.println("解析失败");
+                continue;
             }
+
+           
         }
 
         System.out.println(invoiceCount + " " + invoiceAmount);

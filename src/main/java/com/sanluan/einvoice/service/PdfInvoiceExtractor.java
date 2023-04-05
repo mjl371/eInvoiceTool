@@ -134,8 +134,8 @@ public class PdfInvoiceExtractor {
             }
         }
         PDFKeyWordPosition kwp = new PDFKeyWordPosition();
-        Map<String, List<Position>> positionListMap = kwp
-                .getCoordinate(Arrays.asList("机器编号", "税率", "价税合计", "合计", "开票日期", "规格型号", "车牌号", "开户行及账号", "密", "码", "区"), doc);
+        Map<String, List<Position>> positionListMap = kwp.getCoordinate(
+                Arrays.asList("机器编号", "税率", "价税合计", "合计", "开票日期", "规格型号", "车牌号", "开户行及账号", "密", "码", "区"), doc);
 
         PDFTextStripperByArea stripper = new PDFTextStripperByArea();
         stripper.setSortByPosition(true);
@@ -263,15 +263,20 @@ public class PdfInvoiceExtractor {
         {
             List<String> skipList = new ArrayList<>();
             List<Detail> detailList = new ArrayList<>();
-            String[] detailPriceStringArray = stripper.getTextForRegion("detailPrice").replaceAll("　", " ").replaceAll(" ", " ")
+            String[] detailPriceStringArray = stripper.getTextForRegion("detailPrice").replaceAll("　", " ")
+                    .replaceAll(" ", " ")
                     .replaceAll("\r", "").split("\\n");
             for (String detailString : detailPriceStringArray) {
                 Detail detail = new Detail();
                 detail.setName("");
                 String[] itemArray = StringUtils.split(detailString, " ");
                 if (2 == itemArray.length) {
-                    detail.setAmount(new BigDecimal(itemArray[0]));
-                    detail.setTaxAmount(new BigDecimal(itemArray[1]));
+                    if (StringUtils.isNumeric(itemArray[0])) {
+                        detail.setAmount(new BigDecimal(itemArray[0]));
+                    }
+                    if (StringUtils.isNumeric(itemArray[1])) {
+                        detail.setTaxAmount(new BigDecimal(itemArray[1]));
+                    }
                     detailList.add(detail);
                 } else if (2 < itemArray.length) {
                     detail.setAmount(new BigDecimal(itemArray[itemArray.length - 3]));
@@ -310,9 +315,11 @@ public class PdfInvoiceExtractor {
                 }
             }
 
-            String[] detailNameStringArray = stripper.getTextForRegion("detailName").replaceAll("　", " ").replaceAll(" ", " ")
+            String[] detailNameStringArray = stripper.getTextForRegion("detailName").replaceAll("　", " ")
+                    .replaceAll(" ", " ")
                     .replaceAll("\r", "").split("\\n");
-            String[] detailStringArray = replace(detailStripper.getTextForRegion("detail")).replaceAll("\r", "").split("\\n");
+            String[] detailStringArray = replace(detailStripper.getTextForRegion("detail")).replaceAll("\r", "")
+                    .split("\\n");
             int i = 0, j = 0, h = 0, m = 0;
             Detail lastDetail = null;
             for (String detailString : detailStringArray) {
