@@ -29,4 +29,10 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+    - name: Upload jar to Artifact
+      if: ${{ github.event_name != 'release' && success() }}
+      uses: actions/upload-artifact@v3
+      with:
+          name: einvoice
+          path: /home/runner/work/einvoice/einvoice/target/*.jar
   
