@@ -9,9 +9,8 @@ import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 
 /****
- * @description: 票据实体
- * @author: xj
- * @date: 2021/8/30 17:18
+ * @description: 发票实体类
+ * @author: mjl
  */
 @Data
 public class Invoice {
