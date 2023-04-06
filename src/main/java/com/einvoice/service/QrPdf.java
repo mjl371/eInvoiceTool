@@ -1,8 +1,9 @@
 package com.einvoice.service;
 
 import com.google.zxing.*;
-import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import cn.hutool.extra.qrcode.BufferedImageLuminanceSource;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -45,9 +46,9 @@ public class QrPdf {
     /**
      * 渲染一个PDF页面.
      *
-     * @param pageIndex    要渲染的页码
-     * @param dpi          要渲染成的DPI
-     * @return             渲染后的PDF页面
+     * @param pageIndex 要渲染的页码
+     * @param dpi       要渲染成的DPI
+     * @return 渲染后的PDF页面
      * @throws IOException 如果渲染失败
      */
     private BufferedImage getPageImage(int pageIndex, int dpi) throws IOException {
@@ -61,8 +62,8 @@ public class QrPdf {
     /**
      * 提取并解码PDF文件中指定页数中的二维码.
      *
-     * @param page               想要解析的二维码所处的页数
-     * @return                   提取并解析后的二维码
+     * @param page 想要解析的二维码所处的页数
+     * @return 提取并解析后的二维码
      * @throws IOException       如果读取文件失败或者没有这个页码
      * @throws NotFoundException 如果解析二维码失败
      */
@@ -85,8 +86,8 @@ public class QrPdf {
     /**
      * 扫描并解码PDF渲染图像中的二维码.
      *
-     * @param pageIndex          需要渲染的页码
-     * @return                   二维码解析后的值.
+     * @param pageIndex 需要渲染的页码
+     * @return 二维码解析后的值.
      * @throws NotFoundException 如果无法识别二维码
      * @throws IOException       如果无法读取文件
      */
@@ -101,7 +102,7 @@ public class QrPdf {
         qrcodeReader.setHints(hintMap);
 
         // 经多次试验, 从最小的DPI开始, 性能最好
-        int[] dpiSettings = {150, 200, 250, 300};
+        int[] dpiSettings = { 150, 200, 250, 300 };
         for (int i = 0; i < dpiSettings.length; i++) {
             try {
                 // 从最小的DPI开始.

@@ -14,11 +14,11 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-// import org.springframework.util.StreamUtils;
 
 import com.einvoice.entity.Invoice;
 import com.einvoice.entity.Invoice.Detail;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
 
 /**
@@ -35,9 +35,6 @@ public class OfdInvoiceExtractor {
         ZipEntry entry1 = zipFile.getEntry("Doc_0/Pages/Page_0/Content.xml");
         InputStream input = zipFile.getInputStream(entry);
         InputStream input1 = zipFile.getInputStream(entry1);
-
-        // String body = StreamUtils.copyToString(input, Charset.forName("utf-8"));
-        // String content = StreamUtils.copyToString(input1, Charset.forName("utf-8"));
 
         String body = IoUtil.readUtf8(input);
         String content =IoUtil.readUtf8(input1);
@@ -108,17 +105,7 @@ public class OfdInvoiceExtractor {
     }
 
     public static BigDecimal stringToBigDecimal(String string) {
-        if (StringUtils.isBlank(string))
-            return null;
-        else {
-            try {
-                return new BigDecimal(string);
-            } catch (Exception e) {
-                return null;
-            }
-
-        }
-
+       return  Convert.toBigDecimal(string);
     }
 
     public static BigDecimal getTaxRate(String string) {
