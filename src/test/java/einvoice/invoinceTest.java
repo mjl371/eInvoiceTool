@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.dom4j.DocumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.einvoice.entity.Invoice;
 import com.einvoice.service.OfdInvoiceExtractor;
