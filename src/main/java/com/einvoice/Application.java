@@ -1,4 +1,4 @@
-package com.sanluan.einvoice;
+package com.einvoice;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,23 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.sanluan.einvoice.service.OfdInvoiceExtractor;
-import com.sanluan.einvoice.service.PdfInvoiceExtractor;
+import com.einvoice.service.OfdInvoiceExtractor;
+import com.einvoice.service.PdfInvoiceExtractor;
 import com.alibaba.excel.EasyExcel;
 
-import com.sanluan.einvoice.service.Invoice;
+import com.einvoice.entity.Invoice;
 
-@SpringBootApplication
 public class Application {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("请输入发票文件夹路径: ");
         String input = scanner.nextLine();
+        scanner.close();
         System.out.println("输入路径: " + input);
         getFolder(input);
+
 
     }
 

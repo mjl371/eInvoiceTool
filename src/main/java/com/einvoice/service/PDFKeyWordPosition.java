@@ -1,4 +1,4 @@
-package com.sanluan.einvoice.service;
+package com.einvoice.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

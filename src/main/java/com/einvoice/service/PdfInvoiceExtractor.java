@@ -1,4 +1,4 @@
-package com.sanluan.einvoice.service;
+package com.einvoice.service;
 
 import java.awt.Rectangle;
 import java.io.File;
@@ -16,6 +16,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
+
+import com.einvoice.entity.Invoice;
+import com.einvoice.entity.Invoice.Detail;
 
 /**
  * 专用于处理电子发票识别的类
@@ -41,7 +44,7 @@ public class PdfInvoiceExtractor {
         String allText = replace(fullText).replaceAll("（", "(").replaceAll("）", ")").replaceAll("￥", "¥");
         {
             String reg = "机器编号:(?<machineNumber>\\d*)|发票代码:(?<code>\\d{12})|发票号码:(?<number>\\d*)|:(?<date>\\d{4}年\\d{2}月\\d{2}日)"
-                    + "|校验码:(?<checksum>\\d{20}|\\S{4,})";
+                    + "|校验码:(?<checkCode>\\d{20}|\\S{4,})";
             Pattern pattern = Pattern.compile(reg);
             Matcher matcher = pattern.matcher(allText);
             while (matcher.find()) {
@@ -53,8 +56,8 @@ public class PdfInvoiceExtractor {
                     invoice.setNumber(matcher.group("number"));
                 } else if (matcher.group("date") != null) {
                     invoice.setDate(matcher.group("date"));
-                } else if (matcher.group("checksum") != null) {
-                    invoice.setChecksum(matcher.group("checksum"));
+                } else if (matcher.group("checkCode") != null) {
+                    invoice.setCheckCode((matcher.group("checkCode")));
                 }
             }
         }
@@ -96,7 +99,7 @@ public class PdfInvoiceExtractor {
             Pattern pattern = Pattern.compile(reg);
             Matcher matcher = pattern.matcher(allText);
             if (matcher.find()) {
-                invoice.setTotalAmountString(matcher.group("amountString"));
+                invoice.setTotalAmountZH(matcher.group("amountString"));
                 try {
                     invoice.setTotalAmount(new BigDecimal(matcher.group("amount")));
                 } catch (Exception e) {

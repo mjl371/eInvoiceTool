@@ -1,10 +1,9 @@
-package com.sanluan.einvoice.service;
+package com.einvoice.service;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -15,7 +14,12 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.util.StreamUtils;
+// import org.springframework.util.StreamUtils;
+
+import com.einvoice.entity.Invoice;
+import com.einvoice.entity.Invoice.Detail;
+
+import cn.hutool.core.io.IoUtil;
 
 /**
  * 专用于处理电子发票识别的类
@@ -31,8 +35,13 @@ public class OfdInvoiceExtractor {
         ZipEntry entry1 = zipFile.getEntry("Doc_0/Pages/Page_0/Content.xml");
         InputStream input = zipFile.getInputStream(entry);
         InputStream input1 = zipFile.getInputStream(entry1);
-        String body = StreamUtils.copyToString(input, Charset.forName("utf-8"));
-        String content = StreamUtils.copyToString(input1, Charset.forName("utf-8"));
+
+        // String body = StreamUtils.copyToString(input, Charset.forName("utf-8"));
+        // String content = StreamUtils.copyToString(input1, Charset.forName("utf-8"));
+
+        String body = IoUtil.readUtf8(input);
+        String content =IoUtil.readUtf8(input1);
+
         zipFile.close();
         Document document = DocumentHelper.parseText(body);
         Element root = document.getRootElement();
@@ -41,11 +50,11 @@ public class OfdInvoiceExtractor {
         invoice.setCode(root.elementTextTrim("InvoiceCode"));
         invoice.setNumber(root.elementTextTrim("InvoiceNo"));
         invoice.setDate(root.elementTextTrim("IssueDate"));
-        invoice.setChecksum(root.elementTextTrim("InvoiceCheckCode"));
+        invoice.setCheckCode(root.elementTextTrim("InvoiceCheckCode"));
         invoice.setAmount(stringToBigDecimal(root.elementTextTrim("TaxExclusiveTotalAmount")));
         invoice.setTaxAmount(stringToBigDecimal(root.elementTextTrim("TaxTotalAmount")));
         int ind = content.indexOf("圆整</ofd:TextCode>");
-        invoice.setTotalAmountString(content.substring(content.lastIndexOf(">", ind) + 1, ind + 2));
+        invoice.setTotalAmountZH(content.substring(content.lastIndexOf(">", ind) + 1, ind + 2));
         invoice.setTotalAmount(stringToBigDecimal(root.elementTextTrim("TaxInclusiveTotalAmount")));
         invoice.setPayee(root.elementTextTrim("Payee"));
         invoice.setReviewer(root.elementTextTrim("Checker"));

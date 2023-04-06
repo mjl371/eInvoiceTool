@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.dom4j.DocumentException;
 
-import com.sanluan.einvoice.service.OfdInvoiceExtractor;
+import com.einvoice.service.OfdInvoiceExtractor;
 
 public class Test {
 
