@@ -34,5 +34,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
           name: einvoice
-          path: /home/runner/work/einvoice/einvoice/target/*.jar
+          path: target/*.jar
   
