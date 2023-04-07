@@ -1,0 +1,14 @@
+com.einvoice.parse.reg.HeadRegularParse
+com.einvoice.parse.reg.TypeRegularParse
+com.einvoice.parse.reg.TaxAmountRegularParse
+com.einvoice.parse.reg.TotalAmountRegularParse
+com.einvoice.parse.reg.BottomRegularParse
+
+# 设定区域信息
+com.einvoice.parse.reg.AddKeyWordsPositionParse
+com.einvoice.parse.reg.AddRegionParse
+
+com.einvoice.parse.reg.PasswordRegularParse
+com.einvoice.parse.reg.BuyerInfoRegularParse
+com.einvoice.parse.reg.SellerRegularParse
+com.einvoice.parse.reg.DetailParse
