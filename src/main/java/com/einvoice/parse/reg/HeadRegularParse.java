@@ -16,24 +16,14 @@ import java.util.regex.Pattern;
  * @date 2021/8/27 16:39
  */
 public class HeadRegularParse extends AbstractRegularParse {
-
-    @Override
-    protected String getRegular() {
-        String reg = "机器编号:(?<machineNumber>\\d{12})" +
-                "|发票代码:(?<code>\\d{12})" +
-                "|发票号码:(?<number>\\d{8})" +
-                "|开票日期:(?<date>\\d{4}年\\d{2}月\\d{2}日)" +
-                "|校验码:(?<checkCode>\\d{20}|\\S{4,})";
-        //Pattern pattern = Pattern.compile(reg);
-        return reg;
-    }
-
+    // 使用预编译正则提升性能
+    private static final Pattern CODE_FALLBACK_PATTERN = Pattern.compile("通发票(?<code>\\d{12})");
+    
     @Override
     protected void check(String fullText, Invoice invoice, Map<String, Field> invoiceField) {
+        // 添加方法说明注释
         if (StringUtils.isEmpty(invoice.getCode())) {
-            // 有样本显示，票代码被识被提取到标题中
-            String invoiceTitle = "通发票(?<code>\\d{12})";
-            Matcher code = Pattern.compile(invoiceTitle).matcher(fullText);
+            Matcher code = CODE_FALLBACK_PATTERN.matcher(fullText);
             if (code.find()) {
                 invoice.setCode(code.group("code"));
             }

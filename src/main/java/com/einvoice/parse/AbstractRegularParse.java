@@ -32,24 +32,21 @@ public abstract class AbstractRegularParse implements Parse {
     /**
      * 获取正则表达式
      */
-    protected String getRegular() {
-        return null;
+    protected abstract String getRegular();
+    protected abstract String getKeyWord();
+    protected void doSetInvoice(Invoice invoice, String reg, String fullText, Map<String, Field> invoiceField) {
+        // 公共的正则处理逻辑
     }
-
-    /**
-     * 获取关键字
-     */
-    protected String getKeyWord() {
-        return null;
+    // 新增公共正则预编译方法
+    protected Pattern compilePattern(String regex) {
+        return Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
     }
-
     /**
      * 校验字段设值是否成功
      */
     protected void check(String fullText, Invoice invoice, Map<String, Field> invoiceField) {
 
     }
-
     @Override
     public void doParse(ParseRequest parseRequest) {
         Invoice invoice = parseRequest.getInvoice();
