@@ -4,21 +4,24 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.einvoice.entity.Invoice.Detail;
 
 import cn.hutool.core.io.IoUtil;
 
 import com.einvoice.entity.Invoice;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.einvoice.entity.Invoice;
 
 /**
  * 专用于处理电子发票识别的类
