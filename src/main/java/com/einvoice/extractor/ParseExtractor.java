@@ -7,6 +7,8 @@ import com.einvoice.domain.PDFKeyWordPosition;
 import com.einvoice.domain.ParseChain;
 import com.einvoice.domain.ParseRequest;
 import com.einvoice.parse.Parse;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -58,7 +60,9 @@ public class ParseExtractor {
 
     public static Invoice getInvoice(byte[] file) throws IOException {
         // 读出完整的内容
-        PDDocument document = PDDocument.load(file);
+
+        PDDocument document = Loader.loadPDF(file);
+
         PDPage firstPage = document.getPage(0);
         PDFTextStripper textStripper = new PDFTextStripper();
         textStripper.setSortByPosition(true);

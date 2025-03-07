@@ -7,6 +7,7 @@ import cn.hutool.extra.qrcode.BufferedImageLuminanceSource;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.Loader;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -37,7 +38,8 @@ public class QrPdf {
      * @throws IOException 如果无法取到PDF的总页数
      */
     public int getNumberOfPages() throws IOException {
-        PDDocument pdfDoc = PDDocument.load(docPath.toFile());
+        PDDocument pdfDoc = Loader.loadPDF(docPath.toFile());
+
         int numberOfPages = pdfDoc.getNumberOfPages();
         pdfDoc.close();
         return numberOfPages;
@@ -52,7 +54,7 @@ public class QrPdf {
      * @throws IOException 如果渲染失败
      */
     private BufferedImage getPageImage(int pageIndex, int dpi) throws IOException {
-        PDDocument pdfDoc = PDDocument.load(docPath.toFile());
+        PDDocument pdfDoc = Loader.loadPDF(docPath.toFile());
         PDFRenderer renderer = new PDFRenderer(pdfDoc);
         BufferedImage image = renderer.renderImageWithDPI(pageIndex - 1, dpi, ImageType.BINARY);
         pdfDoc.close();

@@ -9,17 +9,16 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.lang3.StringUtils;
+
+import cn.hutool.core.io.IoUtil;
+
+import com.einvoice.entity.Invoice;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.einvoice.entity.Invoice;
-import com.einvoice.entity.Invoice.Detail;
-
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.io.IoUtil;
 
 /**
  * 专用于处理电子发票识别的类
@@ -48,11 +47,26 @@ public class OfdInvoiceExtractor {
         invoice.setNumber(root.elementTextTrim("InvoiceNo"));
         invoice.setDate(root.elementTextTrim("IssueDate"));
         invoice.setCheckCode(root.elementTextTrim("InvoiceCheckCode"));
-        invoice.setAmount(stringToBigDecimal(root.elementTextTrim("TaxExclusiveTotalAmount")));
-        invoice.setTaxAmount(stringToBigDecimal(root.elementTextTrim("TaxTotalAmount")));
+        invoice.setAmount(new BigDecimal(root.elementTextTrim("TaxExclusiveTotalAmount")));
+        //invoice.setTaxAmount(new BigDecimal(root.elementTextTrim("TaxTotalAmount")));
+        //System.out.println("错误Object: " + root.elementTextTrim("TaxTotalAmount"));
+
+        String taxTotalAmountStr = root.elementTextTrim("TaxTotalAmount");
+        Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?"); // 正则表达式匹配数字，包括可能的负号和小数部分
+        Matcher matcher = pattern.matcher(taxTotalAmountStr);
+
+        BigDecimal taxAmount = null;
+        if (matcher.find()) {
+            taxAmount = new BigDecimal(matcher.group());
+            invoice.setTaxAmount(taxAmount);
+        } else {
+            // 处理错误情况，例如记录日志或抛出异常
+            //throw new IllegalArgumentException("无法从字符串中提取有效的税金额: " + taxTotalAmountStr);
+        }
+
         int ind = content.indexOf("圆整</ofd:TextCode>");
         invoice.setTotalAmountZH(content.substring(content.lastIndexOf(">", ind) + 1, ind + 2));
-        invoice.setTotalAmount(stringToBigDecimal(root.elementTextTrim("TaxInclusiveTotalAmount")));
+        invoice.setTotalAmount(new BigDecimal(root.elementTextTrim("TaxInclusiveTotalAmount")));
         invoice.setPayee(root.elementTextTrim("Payee"));
         invoice.setReviewer(root.elementTextTrim("Checker"));
         invoice.setDrawer(root.elementTextTrim("InvoiceClerk"));
@@ -86,47 +100,39 @@ public class OfdInvoiceExtractor {
             for (Element element : elements) {
                 Detail detail = new Detail();
                 detail.setName(element.elementTextTrim("Item"));
-                detail.setAmount(stringToBigDecimal(element.elementTextTrim("Amount")));
-                detail.setTaxAmount(stringToBigDecimal(element.elementTextTrim("TaxAmount")));
-                detail.setCount(stringToBigDecimal(element.elementTextTrim("Quantity")));
-                detail.setPrice(stringToBigDecimal(element.elementTextTrim("Price")));
+                detail.setAmount(new BigDecimal(element.elementTextTrim("Amount")));
+                //detail.setTaxAmount(new BigDecimal(element.elementTextTrim("TaxAmount")));
+
+                // 假设 element 是某个XML或JSON元素的引用
+                String taxAmountStr = element.elementTextTrim("TaxAmount");
+// 使用正则表达式匹配并提取数字部分
+                Pattern patterndetail = Pattern.compile("-?\\d+(\\.\\d+)?"); // 匹配整数或小数
+                Matcher matcherdetail = patterndetail.matcher(taxAmountStr);
+                BigDecimal taxAmountdetail = null;
+                if (matcherdetail.find()) {
+                    // 提取匹配到的数字部分并转换为BigDecimal
+                    taxAmountdetail = new BigDecimal(matcherdetail.group());
+                    detail.setTaxAmount(taxAmountdetail);
+                    detail.setTaxRate(
+                            new BigDecimal(element.elementTextTrim("TaxScheme").replace("%", "")).divide(new BigDecimal(100)));
+                } else {
+                    // 如果找不到匹配项，处理错误情况
+                    //throw new IllegalArgumentException("无法从字符串中提取有效的税额: " + taxAmountStr);
+                }
+// 设置税额
+
+
+
+                detail.setCount(new BigDecimal(element.elementTextTrim("Quantity")));
+                detail.setPrice(new BigDecimal(element.elementTextTrim("Price")));
                 detail.setUnit(element.elementTextTrim("MeasurementDimension"));
                 detail.setModel(element.elementTextTrim("Specification"));
-
-                detail.setTaxRate(
-                        getTaxRate(element.elementTextTrim("TaxScheme")));
-
+                /*detail.setTaxRate(
+                        new BigDecimal(element.elementTextTrim("TaxScheme").replace("%", "")).divide(new BigDecimal(100)));*/
                 detailList.add(detail);
             }
             invoice.setDetailList(detailList);
         }
         return invoice;
-
     }
-
-    public static BigDecimal stringToBigDecimal(String string) {
-       return  Convert.toBigDecimal(string);
-    }
-
-    public static BigDecimal getTaxRate(String string) {
-        if (StringUtils.isBlank(string))
-            return null;
-        else {
-            if (string.contains("免税")) {
-                return new BigDecimal(0);
-            } else {
-
-                BigDecimal bigDecimal = stringToBigDecimal(string.replace("%", ""));
-                if (bigDecimal == null) {
-                    return bigDecimal;
-                } else {
-                    return bigDecimal.divide(new BigDecimal(100));
-                }
-
-            }
-
-        }
-
-    }
-
 }
