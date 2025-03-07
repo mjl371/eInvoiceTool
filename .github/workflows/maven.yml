@@ -28,7 +28,7 @@ jobs:
       run: mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B -V
     - name: Upload jar to Artifact
       if: ${{ github.event_name != 'release' && success() }}
-      uses: actions/upload-artifact
+      uses: actions/upload-artifact@v4
       with:
           name: einvoice
           path: target/*.jar
