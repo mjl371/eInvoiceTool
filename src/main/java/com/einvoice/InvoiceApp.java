@@ -12,13 +12,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import com.alibaba.excel.EasyExcel;
 
 public class InvoiceApp extends Application {
 
@@ -62,12 +63,20 @@ public class InvoiceApp extends Application {
         Button importButton = new Button("导入");
         importButton.setOnAction(e -> importFiles(primaryStage));
 
+        // 新增文件夹导入按钮
+        Button importFolderButton = new Button("导入文件夹");
+        importFolderButton.setOnAction(e -> importFolder(primaryStage));
+        
         Button parseButton = new Button("解析");
         parseButton.setOnAction(e -> parseFiles());
 
-        // 创建按钮布局
+        // 新增导出按钮
+        Button exportButton = new Button("导出Excel");
+        exportButton.setOnAction(e -> exportToExcel());
+
+        // 更新按钮布局（添加导出按钮）
         HBox buttonBox = new HBox(10);
-        buttonBox.getChildren().addAll(importButton, parseButton);
+        buttonBox.getChildren().addAll(importButton, importFolderButton, parseButton, exportButton);
         buttonBox.setPadding(new Insets(10));
 
         // 创建主布局
@@ -93,7 +102,7 @@ public class InvoiceApp extends Application {
         List<File> files = fileChooser.showOpenMultipleDialog(primaryStage);
         if (files != null) {
             for (File file : files) {
-                invoiceList.add(new InvoiceWrapper(file.getName(), null));
+                invoiceList.add(new InvoiceWrapper(file, null));
             }
         }
     }
@@ -101,7 +110,7 @@ public class InvoiceApp extends Application {
     private void parseFiles() {
         List<InvoiceWrapper> parsedList = new ArrayList<>();
         for (InvoiceWrapper wrapper : invoiceList) {
-            File file = new File(wrapper.getFileName());
+            File file = wrapper.invoiceFile;
             try {
                 Invoice invoice = null;
                 if (file.getName().toLowerCase().endsWith(".pdf")) {
@@ -109,7 +118,7 @@ public class InvoiceApp extends Application {
                 } else if (file.getName().toLowerCase().endsWith(".ofd")) {
                     invoice = OfdInvoiceExtractor.extract(file);
                 }
-                parsedList.add(new InvoiceWrapper(wrapper.getFileName(), invoice));
+                parsedList.add(new InvoiceWrapper(file, invoice));
             } catch ( Exception e) {
                 e.printStackTrace();
             }
@@ -117,21 +126,97 @@ public class InvoiceApp extends Application {
         invoiceList.setAll(parsedList);
     }
 
+    // 新增文件夹导入方法
+    private void importFolder(Stage primaryStage) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File directory = directoryChooser.showDialog(primaryStage);
+        
+        if (directory != null && directory.isDirectory()) {
+            List<File> files = new ArrayList<>();
+            collectFiles(directory, files);
+            
+            for (File file : files) {
+                invoiceList.add(new InvoiceWrapper(file, null));
+            }
+        }
+    }
+    // 递归收集文件的方法
+    private void collectFiles(File directory, List<File> fileList) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    collectFiles(file, fileList);
+                } else {
+                    String name = file.getName().toLowerCase();
+                    if (name.endsWith(".pdf") || name.endsWith(".ofd")) {
+                        fileList.add(file);
+                    }
+                }
+            }
+        }
+    }
     public static void main(String[] args) {
         launch(args);
     }
 
-    public static class InvoiceWrapper {
-        private String fileName;
-        private Invoice invoice;
+    // 新增导出方法
+private void exportToExcel() {
+    List<Invoice> invoices = new ArrayList<>();
+    for (InvoiceWrapper wrapper : invoiceList) {
+        if (wrapper.invoice != null) {
+            invoices.add(wrapper.invoice);
+        }
+    }
+    
+    if (invoices.isEmpty()) {
+        showAlert("提示", "没有可导出的发票数据");
+        return;
+    }
 
-        public InvoiceWrapper(String fileName, Invoice invoice) {
-            this.fileName = fileName;
+    DirectoryChooser chooser = new DirectoryChooser();
+    File directory = chooser.showDialog(null);
+    
+    if (directory != null) {
+        String path = directory.getAbsolutePath();
+        String fileName = path + "\\发票数据_" + System.currentTimeMillis() + ".xlsx";
+        
+        try {
+            EasyExcel.write(fileName, Invoice.class)
+                    .sheet("发票数据")
+                    .doWrite(invoices);
+            showAlert("导出成功", "文件已保存至：" + fileName);
+        } catch (Exception e) {
+            showAlert("导出失败", "错误信息：" + e.getMessage());
+        }
+    }
+}
+
+// 新增警告框方法
+private void showAlert(String title, String content) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
+
+    public static class InvoiceWrapper {
+  
+        private Invoice invoice;
+        private File invoiceFile;
+
+        public InvoiceWrapper(File invoiceFile, Invoice invoice) {
             this.invoice = invoice;
+            this.invoiceFile = invoiceFile; 
+        }
+
+        public String getFilePath() {
+            return invoiceFile != null ? invoiceFile.getAbsolutePath() : "";
         }
 
         public String getFileName() {
-            return fileName;
+            return invoiceFile != null ? invoiceFile.getName() : "";
         }
 
         public String getTitle() {
@@ -163,3 +248,4 @@ public class InvoiceApp extends Application {
         }
     }
 }
+
