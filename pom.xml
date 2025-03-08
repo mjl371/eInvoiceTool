@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.boot.version>2.7.10</spring.boot.version>
+        <!-- <spring.boot.version>2.7.10</spring.boot.version> -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>21</javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
@@ -103,18 +103,7 @@
     <build>
         <plugins>
 
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>                            <!--可以把依赖的包都打包到生成的Jar包中 -->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+        
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
