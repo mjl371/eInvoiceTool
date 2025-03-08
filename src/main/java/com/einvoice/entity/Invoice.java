@@ -14,6 +14,11 @@ import com.alibaba.excel.annotation.ExcelProperty;
  */
 @Data
 public class Invoice {
+    /**
+     * 发票标题
+     */
+
+    private String fileName;
 
     /**
      * 发票标题

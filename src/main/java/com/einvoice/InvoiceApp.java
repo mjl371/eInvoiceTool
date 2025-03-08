@@ -40,11 +40,24 @@ public class InvoiceApp extends Application {
 
         TableColumn<InvoiceWrapper, String> machineNumberColumn = new TableColumn<>("机器编号");
         machineNumberColumn.setCellValueFactory(new PropertyValueFactory<>("machineNumber"));
-
-        // 添加其他列...
-
-        tableView.getColumns().addAll(fileNameColumn, titleColumn, machineNumberColumn);
-
+        // 新增列
+        TableColumn<InvoiceWrapper, String> codeColumn = new TableColumn<>("发票代码");
+        codeColumn.setCellValueFactory(new PropertyValueFactory<>("code"));
+        
+        TableColumn<InvoiceWrapper, String> numberColumn = new TableColumn<>("发票号码"); 
+        numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
+        
+        TableColumn<InvoiceWrapper, String> dateColumn = new TableColumn<>("开票日期");
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        
+        TableColumn<InvoiceWrapper, String> buyerNameColumn = new TableColumn<>("购方名称");
+        buyerNameColumn.setCellValueFactory(new PropertyValueFactory<>("buyerName"));
+        
+        TableColumn<InvoiceWrapper, String> amountColumn = new TableColumn<>("金额");
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        // 更新列添加列表（替换原来的addAll）
+        tableView.getColumns().addAll(fileNameColumn, titleColumn, machineNumberColumn, 
+            codeColumn, numberColumn, dateColumn, buyerNameColumn, amountColumn);
         // 创建按钮
         Button importButton = new Button("导入");
         importButton.setOnAction(e -> importFiles(primaryStage));
@@ -129,6 +142,24 @@ public class InvoiceApp extends Application {
             return invoice != null ? invoice.getMachineNumber() : "";
         }
 
-        // 添加其他属性的getter方法...
+        public String getCode() {
+            return invoice != null ? invoice.getCode() : "";
+        }
+
+        public String getNumber() {
+            return invoice != null ? invoice.getNumber() : "";
+        }
+
+        public String getDate() {
+            return invoice != null ? invoice.getDate() : "";
+        }
+
+        public String getBuyerName() {
+            return invoice != null ? invoice.getBuyerName() : "";
+        }
+
+        public String getAmount() {
+            return invoice != null ? invoice.getAmount().toPlainString() : "";
+        }
     }
 }
