@@ -25,12 +25,7 @@ public class AddKeyWordsPositionParse extends AbstractRegularParse {
         if (positionListMap.get("机器编号").size() > 0) {
             machineNumber = positionListMap.get("机器编号").get(0);
         } else {
-            // 增加空指针检查
-            List<PDFKeyWordPosition.Position> positions = positionListMap.get("开票日期");
-            if (positions == null || positions.isEmpty()) {
-                throw new InvoiceParseException("无法定位开票日期坐标");
-            }
-            machineNumber = positions.get(0);
+            machineNumber = positionListMap.get("开票日期").get(0);
             machineNumber.setY(machineNumber.getY() + 30);
         }
         positionListMap.put("machineNumber", Collections.singletonList(machineNumber));

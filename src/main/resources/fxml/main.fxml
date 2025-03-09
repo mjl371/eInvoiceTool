@@ -1,0 +1,36 @@
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml">
+    <MenuBar>
+        <Menu text="文件">
+            <MenuItem text="打开文件夹" onAction="#handleSelectFolder"/>
+        </Menu>
+    </MenuBar>
+    
+    <ListView fx:id="fileListView" VBox.vgrow="ALWAYS"/>
+    
+    <HBox spacing="10">
+        <ProgressBar fx:id="progressBar" progress="0" HBox.hgrow="ALWAYS"/>
+        <Button text="导出Excel" onAction="#handleExport"/>
+    </HBox>
+</VBox>
+<VBox spacing="10">
+    <MenuBar>
+        <Menu text="操作">
+            <MenuItem text="导入文件夹" onAction="#handleSelectFolder"/>
+            <MenuItem text="开始解析" onAction="#handleParse"/>
+        </Menu>
+    </MenuBar>
+    
+    <TableView fx:id="invoiceTable">
+        <columns>
+            <TableColumn text="文件名" fx:id="colFileName" prefWidth="200"/>
+            <TableColumn text="发票代码" fx:id="colCode" prefWidth="150"/>
+            <TableColumn text="发票号码" fx:id="colNumber" prefWidth="120"/>
+            <TableColumn text="金额" fx:id="colAmount" prefWidth="100"/>
+        </columns>
+    </TableView>
+    
+    <HBox spacing="10">
+        <ProgressBar fx:id="progressBar" progress="0" HBox.hgrow="ALWAYS"/>
+        <Button text="导出Excel" onAction="#handleExport"/>
+    </HBox>
+</VBox>
