@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * @author xj

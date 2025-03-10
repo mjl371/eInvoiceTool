@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.apache.commons.lang3.math.NumberUtils;
 import static com.einvoice.utils.StringUtils.replace;
+import static com.einvoice.utils.StringUtils.toBigDecimal;
+
 
 /**
  *
@@ -181,11 +183,11 @@ public class PdfFullElectronicInvoiceService {
                 detail.setName("");
                 String[] itemArray = StringUtils.split(detailString, " ");
                 if (2 == itemArray.length) {
-                    detail.setAmount(new BigDecimal(itemArray[0]));
-                    detail.setTaxAmount(new BigDecimal(itemArray[1]));
+                    detail.setAmount(toBigDecimal(itemArray[0]));
+                    detail.setTaxAmount(toBigDecimal(itemArray[1]));
                     detailList.add(detail);
                 } else if (2 < itemArray.length) {
-                    detail.setAmount(new BigDecimal(itemArray[itemArray.length - 3]));
+                    detail.setAmount(toBigDecimal(itemArray[itemArray.length - 3]));
                     String taxRate = itemArray[itemArray.length - 2];
                     if (taxRate.indexOf("免税") > 0 || taxRate.indexOf("不征税") > 0 || taxRate.indexOf("出口零税率") > 0
                             || taxRate.indexOf("普通零税率") > 0 || taxRate.indexOf("%") < 0) {

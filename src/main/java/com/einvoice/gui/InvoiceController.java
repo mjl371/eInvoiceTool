@@ -76,6 +76,7 @@ public class InvoiceController implements Initializable {
 
     @FXML
     private void handleImportFolder(ActionEvent event) {
+
         DirectoryChooser directoryChooser = new DirectoryChooser();
         Window window = ((Node) event.getSource()).getScene().getWindow();
         File directory = directoryChooser.showDialog(window);

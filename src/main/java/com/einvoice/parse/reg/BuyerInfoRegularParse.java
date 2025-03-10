@@ -3,8 +3,6 @@ package com.einvoice.parse.reg;
 
 import com.einvoice.parse.AbstractRegularParse;
 
-import java.util.regex.Pattern;
-
 /****
  * @description: 购方信息
  * @author: xj
