@@ -31,6 +31,10 @@
                 <Button text="导入文件夹" onAction="#handleImportFolder"/>
                 <Button text="解析" onAction="#handleParseFiles"/>
                 <Button text="导出Excel" onAction="#handleExportExcel"/>
+                <Button text="删除选中行" onAction="#handleDeleteSelectedRows" />
+                <Button text="清空列表" onAction="#handleClearList" />
+                <!-- 新增数量显示 -->
+                <Label fx:id="countLabel" text="已加载发票：0" style="-fx-text-fill: #666; -fx-font-weight: bold;"/>
             </children>
         </HBox>
     </bottom>

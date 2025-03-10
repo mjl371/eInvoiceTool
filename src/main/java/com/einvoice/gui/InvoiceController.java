@@ -12,6 +12,7 @@ import com.einvoice.service.OfdInvoiceExtractor;
 import com.einvoice.service.PdfInvoiceExtractor;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,12 +22,17 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Label;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class InvoiceController implements Initializable {
+    
+    @FXML
+    private Label countLabel;
     
     @FXML
     private TableView<InvoiceWrapper> tableView;
@@ -45,6 +51,12 @@ public class InvoiceController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableColumns();
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        
+        // 新增数量绑定
+        invoiceList.addListener((ListChangeListener<InvoiceWrapper>) c -> {
+            countLabel.setText("已加载发票：" + invoiceList.size());
+        });
     }
 
     private void setupTableColumns() {
@@ -91,6 +103,21 @@ public class InvoiceController implements Initializable {
         }
     }
 
+    @FXML
+    private void handleDeleteSelectedRows(ActionEvent event) {
+        ObservableList<InvoiceWrapper> selectedItems = tableView.getSelectionModel().getSelectedItems();
+        if (selectedItems.isEmpty()) {
+            showAlert("提示", "请先选择要删除的行");
+            return;
+        }
+        invoiceList.removeAll(selectedItems);
+    }
+    
+    @FXML
+    private void handleClearList(ActionEvent event) {
+        invoiceList.clear();
+    }
+    
     @FXML
     private void handleExportExcel(ActionEvent event) {
         exportToExcel();
