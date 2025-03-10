@@ -24,7 +24,6 @@ public class Application {
         System.out.println("输入路径: " + input);
         getFolder(input);
 
-
     }
 
     public static void getFolder(String folderPath) {

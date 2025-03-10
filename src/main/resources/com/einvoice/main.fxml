@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.einvoice.gui.InvoiceController">
+
+    <center>
+        <TableView fx:id="tableView">
+            <!-- 表格列定义 -->
+            <columns>
+                <TableColumn text="发票文件名" fx:id="fileNameColumn" />
+                <TableColumn text="发票标题" fx:id="titleColumn" />
+                <TableColumn text="机器编号" fx:id="machineNumberColumn" />
+                <TableColumn text="发票代码" fx:id="codeColumn" />
+                <TableColumn text="发票号码" fx:id="numberColumn" />
+                <TableColumn text="开票日期" fx:id="dateColumn" />
+                <TableColumn text="购方名称" fx:id="buyerNameColumn" />
+                <TableColumn text="金额" fx:id="amountColumn" />
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <children>
+                <Button text="导入" onAction="#handleImportFiles"/>
+                <Button text="导入文件夹" onAction="#handleImportFolder"/>
+                <Button text="解析" onAction="#handleParseFiles"/>
+                <Button text="导出Excel" onAction="#handleExportExcel"/>
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>
