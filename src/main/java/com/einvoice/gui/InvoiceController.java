@@ -32,32 +32,40 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class InvoiceController implements Initializable {
-    
+
     @FXML
     private Label countLabel;
-    
+
     @FXML
     private TableView<InvoiceWrapper> tableView;
 
-    @FXML private TableColumn<InvoiceWrapper, String> fileNameColumn;
-    @FXML private TableColumn<InvoiceWrapper, String> titleColumn;
-    @FXML private TableColumn<InvoiceWrapper, String> machineNumberColumn;
-    @FXML private TableColumn<InvoiceWrapper, String> codeColumn;
-    @FXML private TableColumn<InvoiceWrapper, String> numberColumn;
-    @FXML private TableColumn<InvoiceWrapper, String> dateColumn;
-    @FXML private TableColumn<InvoiceWrapper, String> buyerNameColumn;
-    @FXML private TableColumn<InvoiceWrapper, String> amountColumn;
-    
     @FXML
-    private Button renameButton;  // 新增按钮引用
-    
+    private TableColumn<InvoiceWrapper, String> fileNameColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> titleColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> machineNumberColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> codeColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> numberColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> dateColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> buyerNameColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> amountColumn;
+
+    @FXML
+    private Button renameButton; // 新增按钮引用
+
     private ObservableList<InvoiceWrapper> invoiceList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableColumns();
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        
+
         // 新增数量绑定
         invoiceList.addListener((ListChangeListener<InvoiceWrapper>) c -> {
             countLabel.setText("已加载发票：" + invoiceList.size());
@@ -73,8 +81,8 @@ public class InvoiceController implements Initializable {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         buyerNameColumn.setCellValueFactory(new PropertyValueFactory<>("buyerName"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        
-        tableView.setItems(invoiceList); 
+
+        tableView.setItems(invoiceList);
 
     }
 
@@ -85,11 +93,11 @@ public class InvoiceController implements Initializable {
         importFiles((Stage) ((Node) event.getSource()).getScene().getWindow());
     }
 
-    @FXML 
+    @FXML
     private void handleParseFiles(ActionEvent event) {
         // 原parseFiles方法逻辑迁移至此
         parseFiles();
-        renameButton.setDisable(false);  // 解析完成后启用按钮
+        renameButton.setDisable(false); // 解析完成后启用按钮
     }
 
     @FXML
@@ -98,11 +106,11 @@ public class InvoiceController implements Initializable {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         Window window = ((Node) event.getSource()).getScene().getWindow();
         File directory = directoryChooser.showDialog(window);
-        
+
         if (directory != null && directory.isDirectory()) {
             List<File> files = new ArrayList<>();
             collectFiles(directory, files);
-            
+
             for (File file : files) {
                 invoiceList.add(new InvoiceWrapper(file, null));
             }
@@ -118,17 +126,18 @@ public class InvoiceController implements Initializable {
         }
         invoiceList.removeAll(selectedItems);
     }
-    
+
     @FXML
     private void handleClearList(ActionEvent event) {
         invoiceList.clear();
     }
-    
+
     @FXML
     private void handleExportExcel(ActionEvent event) {
         exportToExcel();
 
     }
+
     @FXML
     private void handleRenameFiles(ActionEvent event) {
         int successCount = 0;
@@ -136,46 +145,46 @@ public class InvoiceController implements Initializable {
             if (wrapper.invoice != null && wrapper.invoiceFile != null) {
                 try {
                     boolean result = renameInvoiceFile(wrapper);
-                    if (result) successCount++;
+                    if (result)
+                        successCount++;
                 } catch (IOException e) {
                     showAlert("重命名错误", "文件处理失败: " + e.getMessage());
                 }
             }
         }
         showAlert("操作完成", "成功重命名 " + successCount + " 个文件");
-        tableView.refresh();  // 刷新表格显示新文件名
+        tableView.refresh(); // 刷新表格显示新文件名
     }
 
     private boolean renameInvoiceFile(InvoiceWrapper wrapper) throws IOException {
         File originalFile = wrapper.invoiceFile;
         Invoice invoice = wrapper.invoice;
-        
+
         String newName = buildNewFileName(originalFile, invoice);
         File newFile = new File(newName);
-        
+
         if (originalFile.renameTo(newFile)) {
-            wrapper.setInvoiceFile(newFile);  // 更新包装类中的文件引用
-            wrapper.setFileName(newFile);  // 更新文件名显示
+            wrapper.setInvoiceFile(newFile); // 更新包装类中的文件引用
+            wrapper.setFileName(newFile); // 更新文件名显示
             return true;
         }
         return false;
     }
 
     private String buildNewFileName(File originalFile, Invoice invoice) {
-        return originalFile.getParent() + "\\" 
-            + invoice.getDate().replaceAll("[年月日]", "")
-            + "_" + invoice.getSellerName()
-            + "_" + invoice.getTotalAmount()
-            + "_" + invoice.getNumber()
-            + (originalFile.getName().endsWith(".pdf") ? ".pdf" : ".ofd");
+        return originalFile.getParent() + "\\"
+                + invoice.getDate().replaceAll("[年月日]", "")
+                + "_" + invoice.getSellerName()
+                + "_" + invoice.getTotalAmount()
+                + "_" + invoice.getNumber()
+                + (originalFile.getName().endsWith(".pdf") ? ".pdf" : ".ofd");
     }
 
     private void importFiles(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PDF Files", "*.pdf"),
-                new FileChooser.ExtensionFilter("OFD Files", "*.ofd")
-        );
+                new FileChooser.ExtensionFilter("OFD Files", "*.ofd"));
         List<File> files = fileChooser.showOpenMultipleDialog(primaryStage);
         if (files != null) {
             for (File file : files) {
@@ -196,7 +205,7 @@ public class InvoiceController implements Initializable {
                     invoice = OfdInvoiceExtractor.extract(file);
                 }
                 parsedList.add(new InvoiceWrapper(file, invoice));
-            } catch ( Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -207,16 +216,17 @@ public class InvoiceController implements Initializable {
     private void importFolder(Stage primaryStage) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File directory = directoryChooser.showDialog(primaryStage);
-        
+
         if (directory != null && directory.isDirectory()) {
             List<File> files = new ArrayList<>();
             collectFiles(directory, files);
-            
+
             for (File file : files) {
                 invoiceList.add(new InvoiceWrapper(file, null));
             }
         }
     }
+
     // 递归收集文件的方法
     private void collectFiles(File directory, List<File> fileList) {
         File[] files = directory.listFiles();
@@ -234,47 +244,45 @@ public class InvoiceController implements Initializable {
         }
     }
 
-
     // 新增导出方法
-private void exportToExcel() {
-    List<Invoice> invoices = new ArrayList<>();
-    for (InvoiceWrapper wrapper : invoiceList) {
-        if (wrapper.invoice != null) {
-            invoices.add(wrapper.invoice);
+    private void exportToExcel() {
+        List<Invoice> invoices = new ArrayList<>();
+        for (InvoiceWrapper wrapper : invoiceList) {
+            if (wrapper.invoice != null) {
+                invoices.add(wrapper.invoice);
+            }
+        }
+
+        if (invoices.isEmpty()) {
+            showAlert("提示", "没有可导出的发票数据");
+            return;
+        }
+
+        DirectoryChooser chooser = new DirectoryChooser();
+        File directory = chooser.showDialog(null);
+
+        if (directory != null) {
+            String path = directory.getAbsolutePath();
+            String fileName = path + "\\发票数据_" + System.currentTimeMillis() + ".xlsx";
+
+            try {
+                EasyExcel.write(fileName, Invoice.class)
+                        .sheet("发票数据")
+                        .doWrite(invoices);
+                showAlert("导出成功", "文件已保存至：" + fileName);
+            } catch (Exception e) {
+                showAlert("导出失败", "错误信息：" + e.getMessage());
+            }
         }
     }
-    
-    if (invoices.isEmpty()) {
-        showAlert("提示", "没有可导出的发票数据");
-        return;
+
+    // 新增警告框方法
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
-    DirectoryChooser chooser = new DirectoryChooser();
-    File directory = chooser.showDialog(null);
-    
-    if (directory != null) {
-        String path = directory.getAbsolutePath();
-        String fileName = path + "\\发票数据_" + System.currentTimeMillis() + ".xlsx";
-        
-        try {
-            EasyExcel.write(fileName, Invoice.class)
-                    .sheet("发票数据")
-                    .doWrite(invoices);
-            showAlert("导出成功", "文件已保存至：" + fileName);
-        } catch (Exception e) {
-            showAlert("导出失败", "错误信息：" + e.getMessage());
-        }
-    }
-}
-
-// 新增警告框方法
-private void showAlert(String title, String content) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    alert.showAndWait();
-}
-
-    // 其他事件处理方法保持不变...
 }

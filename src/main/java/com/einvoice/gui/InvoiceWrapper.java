@@ -5,63 +5,60 @@ import java.io.File;
 import com.einvoice.entity.Invoice;
 
 public class InvoiceWrapper {
-  
-  
-        public Invoice invoice;
-        public File invoiceFile;
 
-        public InvoiceWrapper(File invoiceFile, Invoice invoice) {
-            this.invoice = invoice;
-            this.invoiceFile = invoiceFile; 
-        }
+    public Invoice invoice;
+    public File invoiceFile;
 
-        public String getFilePath() {
-            return invoiceFile != null ? invoiceFile.getAbsolutePath() : "";
-        }
+    public InvoiceWrapper(File invoiceFile, Invoice invoice) {
+        this.invoice = invoice;
+        this.invoiceFile = invoiceFile;
+    }
 
-        public String getFileName() {
-            return invoiceFile != null ? invoiceFile.getName() : "";
-        }
+    public String getFilePath() {
+        return invoiceFile != null ? invoiceFile.getAbsolutePath() : "";
+    }
 
-        public String getTitle() {
-            return invoice != null ? invoice.getTitle() : "";
-        }
+    public String getFileName() {
+        return invoiceFile != null ? invoiceFile.getName() : "";
+    }
 
-        public String getMachineNumber() {
-            return invoice != null ? invoice.getMachineNumber() : "";
-        }
+    public String getTitle() {
+        return invoice != null ? invoice.getTitle() : "";
+    }
 
-        public String getCode() {
-            return invoice != null ? invoice.getCode() : "";
-        }
+    public String getMachineNumber() {
+        return invoice != null ? invoice.getMachineNumber() : "";
+    }
 
-        public String getNumber() {
-            return invoice != null ? invoice.getNumber() : "";
-        }
+    public String getCode() {
+        return invoice != null ? invoice.getCode() : "";
+    }
 
-        public String getDate() {
-            return invoice != null ? invoice.getDate() : "";
-        }
+    public String getNumber() {
+        return invoice != null ? invoice.getNumber() : "";
+    }
 
-        public String getBuyerName() {
-            return invoice != null ? invoice.getBuyerName() : "";
-        }
+    public String getDate() {
+        return invoice != null ? invoice.getDate() : "";
+    }
 
-        public String getAmount() {
-            return invoice != null ? invoice.getAmount().toPlainString() : "";
+    public String getBuyerName() {
+        return invoice != null ? invoice.getBuyerName() : "";
+    }
+
+    public String getAmount() {
+        return invoice != null ? invoice.getAmount().toPlainString() : "";
+    }
+
+    public void setInvoiceFile(File file) {
+        this.invoiceFile = file;
+    }
+
+    public void setFileName(File newFile) {
+        if (invoiceFile.renameTo(newFile)) {
+            System.out.println("重命名成功 " + newFile.getName());
+        } else {
+            System.out.println("重命名成功失败！检查是否占用文件或存在同名 " + invoiceFile.getName());
         }
-    
-    
-        public void setInvoiceFile(File file) {
-            this.invoiceFile = file;
-        }
-        
-        public void setFileName(File newFile) {
-            if (invoiceFile.renameTo(newFile)) {
-                System.out.println("重命名成功 " + newFile.getName());
-            } else {
-                System.out.println("重命名成功失败！检查是否占用文件或存在同名 " + invoiceFile.getName());
-            }
-        }
+    }
 }
-
