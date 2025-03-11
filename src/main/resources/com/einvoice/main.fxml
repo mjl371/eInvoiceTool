@@ -30,6 +30,7 @@
                 <Button text="导入" onAction="#handleImportFiles"/>
                 <Button text="导入文件夹" onAction="#handleImportFolder"/>
                 <Button text="解析" onAction="#handleParseFiles"/>
+                <Button text="重命名" fx:id="renameButton" onAction="#handleRenameFiles" disable="true"/>
                 <Button text="导出Excel" onAction="#handleExportExcel"/>
                 <Button text="删除选中行" onAction="#handleDeleteSelectedRows" />
                 <Button text="清空列表" onAction="#handleClearList" />

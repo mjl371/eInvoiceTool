@@ -1,6 +1,7 @@
 package com.einvoice.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -45,6 +47,9 @@ public class InvoiceController implements Initializable {
     @FXML private TableColumn<InvoiceWrapper, String> dateColumn;
     @FXML private TableColumn<InvoiceWrapper, String> buyerNameColumn;
     @FXML private TableColumn<InvoiceWrapper, String> amountColumn;
+    
+    @FXML
+    private Button renameButton;  // 新增按钮引用
     
     private ObservableList<InvoiceWrapper> invoiceList = FXCollections.observableArrayList();
 
@@ -84,6 +89,7 @@ public class InvoiceController implements Initializable {
     private void handleParseFiles(ActionEvent event) {
         // 原parseFiles方法逻辑迁移至此
         parseFiles();
+        renameButton.setDisable(false);  // 解析完成后启用按钮
     }
 
     @FXML
@@ -122,6 +128,46 @@ public class InvoiceController implements Initializable {
     private void handleExportExcel(ActionEvent event) {
         exportToExcel();
 
+    }
+    @FXML
+    private void handleRenameFiles(ActionEvent event) {
+        int successCount = 0;
+        for (InvoiceWrapper wrapper : invoiceList) {
+            if (wrapper.invoice != null && wrapper.invoiceFile != null) {
+                try {
+                    boolean result = renameInvoiceFile(wrapper);
+                    if (result) successCount++;
+                } catch (IOException e) {
+                    showAlert("重命名错误", "文件处理失败: " + e.getMessage());
+                }
+            }
+        }
+        showAlert("操作完成", "成功重命名 " + successCount + " 个文件");
+        tableView.refresh();  // 刷新表格显示新文件名
+    }
+
+    private boolean renameInvoiceFile(InvoiceWrapper wrapper) throws IOException {
+        File originalFile = wrapper.invoiceFile;
+        Invoice invoice = wrapper.invoice;
+        
+        String newName = buildNewFileName(originalFile, invoice);
+        File newFile = new File(newName);
+        
+        if (originalFile.renameTo(newFile)) {
+            wrapper.setInvoiceFile(newFile);  // 更新包装类中的文件引用
+            wrapper.setFileName(newFile);  // 更新文件名显示
+            return true;
+        }
+        return false;
+    }
+
+    private String buildNewFileName(File originalFile, Invoice invoice) {
+        return originalFile.getParent() + "\\" 
+            + invoice.getDate().replaceAll("[年月日]", "")
+            + "_" + invoice.getSellerName()
+            + "_" + invoice.getTotalAmount()
+            + "_" + invoice.getNumber()
+            + (originalFile.getName().endsWith(".pdf") ? ".pdf" : ".ofd");
     }
 
     private void importFiles(Stage primaryStage) {

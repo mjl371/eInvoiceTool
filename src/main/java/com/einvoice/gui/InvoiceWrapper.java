@@ -50,5 +50,18 @@ public class InvoiceWrapper {
         public String getAmount() {
             return invoice != null ? invoice.getAmount().toPlainString() : "";
         }
-    }
+    
+    
+        public void setInvoiceFile(File file) {
+            this.invoiceFile = file;
+        }
+        
+        public void setFileName(File newFile) {
+            if (invoiceFile.renameTo(newFile)) {
+                System.out.println("重命名成功 " + newFile.getName());
+            } else {
+                System.out.println("重命名成功失败！检查是否占用文件或存在同名 " + invoiceFile.getName());
+            }
+        }
+}
 
