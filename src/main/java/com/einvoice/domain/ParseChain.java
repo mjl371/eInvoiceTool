@@ -2,8 +2,8 @@ package com.einvoice.domain;
 
 import com.einvoice.entity.Invoice;
 import com.einvoice.parse.Parse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class ParseChain {
 
-    private static final Logger logger = LoggerFactory.getLogger(ParseChain.class);
+    private static final Logger logger = LogManager.getLogger(ParseChain.class);
 
     /**
      * 解析实例

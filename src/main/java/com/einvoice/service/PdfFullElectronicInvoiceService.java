@@ -17,15 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.math.NumberUtils;
 import static com.einvoice.utils.StringUtils.replace;
 import static com.einvoice.utils.StringUtils.toBigDecimal;
-
 
 /**
  *
  * PdfFullElectronicInvoiceService
  * 全电发票处理
+ * 
  * @author zyj
  * @date 2024-4-23 15:59:12
  */
@@ -33,9 +32,11 @@ public class PdfFullElectronicInvoiceService {
 
     /**
      * 普通发票
+     * 
      * @return
      */
-    public static Invoice getFullElectronicInvoice(String fullText, String allText, int pageWidth, PDDocument doc, PDPage firstPage ) throws IOException {
+    public static Invoice getFullElectronicInvoice(String fullText, String allText, int pageWidth, PDDocument doc,
+            PDPage firstPage) throws IOException {
         Invoice invoice = new Invoice();
         {
             String reg = "发票号码:(?<number>\\d{20})|:(?<date>\\d{4}年\\d{2}月\\d{2}日)|购名称:(?<buyerName>[\\u4e00-\\u9fa5]+公司)|销名称:(?<sellerAccount>[\\u4e00-\\u9fa5]+公司)";
@@ -49,7 +50,7 @@ public class PdfFullElectronicInvoiceService {
                     invoice.setDate(matcher.group("date"));
                 } else if (matcher.group("buyerName") != null) {
                     invoice.setBuyerName(matcher.group("buyerName"));
-                }else if(matcher.group("sellerAccount") != null){
+                } else if (matcher.group("sellerAccount") != null) {
                     invoice.setSellerName(matcher.group("sellerAccount"));
                 }
             }
@@ -61,10 +62,10 @@ public class PdfFullElectronicInvoiceService {
             // 多个匹配 会匹配两次.第一次为购买方的税号，第二次为销售的税号
             int i = 0;
             while (matcher.find()) {
-                if(i==0){
+                if (i == 0) {
                     invoice.setBuyerCode(matcher.group(1));
                     i++;
-                }else {
+                } else {
                     invoice.setSellerCode(matcher.group(1));
                 }
             }
@@ -134,7 +135,8 @@ public class PdfFullElectronicInvoiceService {
         }
         PDFKeyWordPosition kwp = new PDFKeyWordPosition();
         Map<String, List<Position>> positionListMap = kwp
-                .getCoordinate(Arrays.asList("机器编号", "税率", "价税合计", "合计", "开票日期", "规格型号", "车牌号", "开户行及账号", "密", "码", "区"), doc);
+                .getCoordinate(
+                        Arrays.asList("机器编号", "税率", "价税合计", "合计", "开票日期", "规格型号", "车牌号", "开户行及账号", "密", "码", "区"), doc);
 
         PDFTextStripperByArea stripper = new PDFTextStripperByArea();
         stripper.setSortByPosition(true);
@@ -172,11 +174,11 @@ public class PdfFullElectronicInvoiceService {
         detailStripper.extractRegions(firstPage);
         doc.close();
 
-
         {
             List<String> skipList = new ArrayList<>();
             List<Detail> detailList = new ArrayList<>();
-            String[] detailPriceStringArray = stripper.getTextForRegion("detailPrice").replaceAll("　", " ").replaceAll(" ", " ")
+            String[] detailPriceStringArray = stripper.getTextForRegion("detailPrice").replaceAll("　", " ")
+                    .replaceAll(" ", " ")
                     .replaceAll("\r", "").split("\\n");
             for (String detailString : detailPriceStringArray) {
                 Detail detail = new Detail();
@@ -223,9 +225,11 @@ public class PdfFullElectronicInvoiceService {
                 }
             }
 
-            String[] detailNameStringArray = stripper.getTextForRegion("detailName").replaceAll("　", " ").replaceAll(" ", " ")
+            String[] detailNameStringArray = stripper.getTextForRegion("detailName").replaceAll("　", " ")
+                    .replaceAll(" ", " ")
                     .replaceAll("\r", "").split("\\n");
-            String[] detailStringArray = replace(detailStripper.getTextForRegion("detail")).replaceAll("\r", "").split("\\n");
+            String[] detailStringArray = replace(detailStripper.getTextForRegion("detail")).replaceAll("\r", "")
+                    .split("\\n");
             int i = 0, j = 0, h = 0, m = 0;
             Detail lastDetail = null;
             for (String detailString : detailStringArray) {
@@ -234,7 +238,7 @@ public class PdfFullElectronicInvoiceService {
                             && !detailString.matches("^ *\\d*(%|免税|不征税|出口零税率|普通零税率)\\S*")
                             && detailString.matches("\\S+\\d+%[\\-\\d]+\\S*")
                             || detailStringArray.length > i + 1
-                            && detailStringArray[i + 1].matches("^ *\\d*(%|免税|不征税|出口零税率|普通零税率)\\S*")) {
+                                    && detailStringArray[i + 1].matches("^ *\\d*(%|免税|不征税|出口零税率|普通零税率)\\S*")) {
                         if (j < detailList.size()) {
                             lastDetail = detailList.get(j);
                             lastDetail.setName(detailNameStringArray[m]);

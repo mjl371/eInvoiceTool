@@ -5,8 +5,8 @@ import com.einvoice.entity.Invoice;
 import com.einvoice.domain.ParseRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractRegularParse implements Parse {
 
-    private final static Logger logger = LoggerFactory.getLogger(AbstractRegularParse.class);
+    private final static Logger logger = LogManager.getLogger(AbstractRegularParse.class);
 
     /**
      * 属性占位符
