@@ -83,35 +83,7 @@ public class InvoiceController implements Initializable {
         buyerNameColumn.setCellValueFactory(new PropertyValueFactory<>("buyerName"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-        // 设置列宽度自适应内容
-        setColumnWidthAutoAdjust(fileNameColumn);
-        setColumnWidthAutoAdjust(titleColumn);
-        setColumnWidthAutoAdjust(machineNumberColumn);
-        setColumnWidthAutoAdjust(codeColumn);
-        setColumnWidthAutoAdjust(numberColumn);
-        setColumnWidthAutoAdjust(dateColumn);
-        setColumnWidthAutoAdjust(buyerNameColumn);
-        setColumnWidthAutoAdjust(amountColumn);
-
         tableView.setItems(invoiceList);
-    }
-
-    private <T> void setColumnWidthAutoAdjust(TableColumn<InvoiceWrapper, T> column) {
-        column.setCellFactory(tc -> {
-            TableCell<InvoiceWrapper, T> cell = new TableCell<InvoiceWrapper, T>() {
-                @Override
-                protected void updateItem(T item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item != null) {
-                        setText(item.toString());
-                    } else {
-                        setText(null);
-                    }
-                }
-            };
-            cell.setPrefWidth(TableCell.USE_COMPUTED_SIZE);
-            return cell;
-        });
     }
 
     @FXML
