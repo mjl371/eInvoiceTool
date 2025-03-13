@@ -1,0 +1,32 @@
+.root {
+    -fx-font-family: "Microsoft YaHei";
+    -fx-font-size: 14px;
+    -fx-background-color: #f0f0f0;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #d3d3d3;
+    -fx-border-width: 1px;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-column-header {
+    -fx-background-color: #e0e0e0;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #005a9e;
+}
+
+.label {
+    -fx-text-fill: #333;
+}
