@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -99,7 +101,6 @@ public class InvoiceController implements Initializable {
     @FXML
     private void handleImportFiles(ActionEvent event) {
         // 原importFiles方法逻辑迁移至此
-
         importFiles((Stage) ((Node) event.getSource()).getScene().getWindow());
     }
 
@@ -117,6 +118,8 @@ public class InvoiceController implements Initializable {
             showAlert("提示", "请先选择要查看二维码的行");
             return;
         }
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
         Path pdfPath = Paths.get(selectedItem.getFilePath());
         QrPdf qrPdf = new QrPdf(pdfPath);
         String qrcode = qrPdf.getQRCode(1);
@@ -124,11 +127,14 @@ public class InvoiceController implements Initializable {
         String[] invoiceQrCodeArray = qrcode.split(",");
         selectedItem.invoice.setCode(invoiceQrCodeArray[2]);
         selectedItem.invoice.setNumber(invoiceQrCodeArray[3]);
-        selectedItem.invoice.setTotalAmount(new BigDecimal(invoiceQrCodeArray[4]));
-        selectedItem.invoice.setDate(invoiceQrCodeArray[5]);
+        // selectedItem.invoice.setTotalAmount(new BigDecimal(invoiceQrCodeArray[4]));
+        LocalDate date = LocalDate.parse(invoiceQrCodeArray[5], inputFormat);
+        selectedItem.invoice.setDate(date.format(outputFormat));
         selectedItem.invoice.setCheckCode(invoiceQrCodeArray[6]);
 
-        showAlert("提示", "Qrcode: " + selectedItem.invoice);
+        tableView.refresh();
+
+        showAlert("提示", "Qrcode: " + qrcode);
         // System.out.println(selectedItem.invoice);
     }
 

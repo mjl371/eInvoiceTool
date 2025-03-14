@@ -7,7 +7,7 @@ import com.einvoice.entity.Invoice;
 public class InvoiceWrapper {
 
     public Invoice invoice;
-    public File invoiceFile;
+    public transient File invoiceFile;
 
     public InvoiceWrapper(File invoiceFile, Invoice invoice) {
         this.invoice = invoice;
