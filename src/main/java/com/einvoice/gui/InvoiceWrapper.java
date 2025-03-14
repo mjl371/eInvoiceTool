@@ -49,6 +49,12 @@ public class InvoiceWrapper {
     public String getAmount() {
         return invoice != null ? invoice.getAmount().toPlainString() : "";
     }
+    public String getTaxAmount() {
+        return invoice != null ? invoice.getTaxAmount().toPlainString() : "";
+    }
+    public String getTotalAmount() {
+        return invoice != null ? invoice.getTotalAmount().toPlainString() : "";
+    }
 
     public void setInvoiceFile(File file) {
         this.invoiceFile = file;
