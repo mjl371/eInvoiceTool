@@ -11,6 +11,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import static com.einvoice.service.PdfFullElectronicInvoiceService.getFullElectronicInvoice;
 import static com.einvoice.service.PdfRegularInvoiceService.getRegularInvoice;
 import static com.einvoice.utils.StringUtils.replace;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 专用于处理电子发票识别的类
@@ -20,6 +22,9 @@ import static com.einvoice.utils.StringUtils.replace;
  */
 
 public class PdfInvoiceExtractor {
+
+    private final static Logger logger = LogManager.getLogger(PdfInvoiceExtractor.class);
+
 
     public static Invoice extract(File file) throws IOException {
 
@@ -34,6 +39,8 @@ public class PdfInvoiceExtractor {
             pageWidth = Math.round(firstPage.getCropBox().getHeight());
         }
         String allText = replace(fullText).replaceAll("（", "(").replaceAll("）", ")").replaceAll("￥", "¥");
+        logger.info(allText);
+        logger.info("allText:",allText);
         if(allText.contains("电子发票")){
             // 全票
           return getFullElectronicInvoice(fullText,allText,pageWidth,doc,firstPage);
