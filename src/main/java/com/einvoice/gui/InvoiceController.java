@@ -2,7 +2,12 @@ package com.einvoice.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -11,6 +16,7 @@ import com.alibaba.excel.EasyExcel;
 import com.einvoice.entity.Invoice;
 import com.einvoice.service.OfdInvoiceExtractor;
 import com.einvoice.service.PdfInvoiceExtractor;
+import com.einvoice.service.QrPdf;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -56,6 +62,10 @@ public class InvoiceController implements Initializable {
     private TableColumn<InvoiceWrapper, String> buyerNameColumn;
     @FXML
     private TableColumn<InvoiceWrapper, String> amountColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> totalAmountColumn;
+    @FXML
+    private TableColumn<InvoiceWrapper, String> taxAmountColumn;
 
     @FXML
     private Button renameButton; // 新增按钮引用
@@ -82,6 +92,8 @@ public class InvoiceController implements Initializable {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         buyerNameColumn.setCellValueFactory(new PropertyValueFactory<>("buyerName"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        taxAmountColumn.setCellValueFactory(new PropertyValueFactory<>("taxAmount"));
+        totalAmountColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
 
         tableView.setItems(invoiceList);
     }
@@ -89,7 +101,6 @@ public class InvoiceController implements Initializable {
     @FXML
     private void handleImportFiles(ActionEvent event) {
         // 原importFiles方法逻辑迁移至此
-
         importFiles((Stage) ((Node) event.getSource()).getScene().getWindow());
     }
 
@@ -98,6 +109,33 @@ public class InvoiceController implements Initializable {
         // 原parseFiles方法逻辑迁移至此
         parseFiles();
         renameButton.setDisable(false); // 解析完成后启用按钮
+    }
+    @FXML
+    private void parseQRCode(ActionEvent event) throws Exception {
+
+        InvoiceWrapper selectedItem = tableView.getSelectionModel().getSelectedItem();
+        if (selectedItem==null) {
+            showAlert("提示", "请先选择要查看二维码的行");
+            return;
+        }
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+        Path pdfPath = Paths.get(selectedItem.getFilePath());
+        QrPdf qrPdf = new QrPdf(pdfPath);
+        String qrcode = qrPdf.getQRCode(1);
+        System.out.println("解析后的值 " + qrcode);
+        String[] invoiceQrCodeArray = qrcode.split(",");
+        selectedItem.invoice.setCode(invoiceQrCodeArray[2]);
+        selectedItem.invoice.setNumber(invoiceQrCodeArray[3]);
+        // selectedItem.invoice.setTotalAmount(new BigDecimal(invoiceQrCodeArray[4]));
+        LocalDate date = LocalDate.parse(invoiceQrCodeArray[5], inputFormat);
+        selectedItem.invoice.setDate(date.format(outputFormat));
+        selectedItem.invoice.setCheckCode(invoiceQrCodeArray[6]);
+
+        tableView.refresh();
+
+        showAlert("提示", "Qrcode: " + qrcode);
+        // System.out.println(selectedItem.invoice);
     }
 
     @FXML

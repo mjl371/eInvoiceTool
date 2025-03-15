@@ -7,7 +7,7 @@ import com.einvoice.entity.Invoice;
 public class InvoiceWrapper {
 
     public Invoice invoice;
-    public File invoiceFile;
+    public transient File invoiceFile;
 
     public InvoiceWrapper(File invoiceFile, Invoice invoice) {
         this.invoice = invoice;
@@ -48,6 +48,12 @@ public class InvoiceWrapper {
 
     public String getAmount() {
         return invoice != null ? invoice.getAmount().toPlainString() : "";
+    }
+    public String getTaxAmount() {
+        return invoice != null ? invoice.getTaxAmount().toPlainString() : "";
+    }
+    public String getTotalAmount() {
+        return invoice != null ? invoice.getTotalAmount().toPlainString() : "";
     }
 
     public void setInvoiceFile(File file) {

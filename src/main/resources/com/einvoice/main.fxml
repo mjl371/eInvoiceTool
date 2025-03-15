@@ -18,6 +18,8 @@
                 <TableColumn text="开票日期" fx:id="dateColumn" />
                 <TableColumn text="购方名称" fx:id="buyerNameColumn" />
                 <TableColumn text="金额" fx:id="amountColumn" />
+                <TableColumn text="税额" fx:id="taxAmountColumn" />
+                <TableColumn text="价税合计(小写)" fx:id="totalAmountColumn" />
             </columns>
         </TableView>
     </center>
@@ -31,6 +33,7 @@
                 <Button text="导入" onAction="#handleImportFiles"/>
                 <Button text="导入文件夹" onAction="#handleImportFolder"/>
                 <Button text="解析" onAction="#handleParseFiles"/>
+                <Button text="查看二维码" onAction="#parseQRCode"/>
                 <Button text="重命名" fx:id="renameButton" onAction="#handleRenameFiles" disable="true"/>
                 <Button text="导出Excel" onAction="#handleExportExcel"/>
                 <Button text="删除选中行" onAction="#handleDeleteSelectedRows" />
